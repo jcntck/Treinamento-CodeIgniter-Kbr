@@ -1,0 +1,10 @@
+body {
+    margin: 25px;
+}
+
+.construcao {
+    position: relative;
+    color: #555;
+    text-align: center;
+    top: calc(50% - 24px);
+}
