@@ -8,7 +8,6 @@ if ($this->session->flashdata('errors')) {
 
 <?php echo form_open('categorias/store'); ?>
 <div class="row">
-    <input type="hidden" name="id">
     <div class="col-4">
         <label for="titulo">Nome da categoria: </label>
         <input type="text" name="titulo" id="titulo" maxlength="129" class="form-control <?php if (!empty(form_error('titulo'))) : ?> is-invalid <?php endif; ?>" placeholder="Categoria" value="<?php echo set_value('titulo'); ?>">
