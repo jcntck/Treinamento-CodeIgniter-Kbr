@@ -25,55 +25,95 @@ class Categorias extends CI_Controller
 		$this->load->model('categorias_model');
 		$this->load->helper('url_helper');
 		$this->load->helper('html');
+		$this->load->helper('form');
+		$this->load->library('session');
+		$this->load->library('form_validation');
 	}
 
 	public function index()
 	{
 		$data['title'] = 'Categorias';
-		$data['categorias'] = $this->categorias_model->get_categorias();
+		$data['categorias'] = $this->categorias_model->get();
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('categorias/index', $data);
 		$this->load->view('templates/footer');
 	}
 
-	// public function view($slug = NULL) 
-	// {
-	// 	$data['news_item'] = $this->news_model->get_news($slug);
-
-	// 	if (empty($data['news_item']))
-	//     {
-	//             show_404();
-	// 	}
-
-	// 	$data['title'] = $data['news_item']['title'];
-
-	// 	$this->load->view('templates/header', $data);
-	// 	$this->load->view('news/view', $data);
-	// 	$this->load->view('templates/footer');
-	// }
-
 	public function create()
 	{
-		$this->load->helper('form');
-		$this->load->library('form_validation');
-
 		$data['title'] = 'Cadastro categorias';
 
-		$this->form_validation->set_rules('titulo', 'Nome', 'required|max_length[128]|is_unique[categorias.titulo]');
+		$this->load->view('templates/header', $data);
+		$this->load->view('categorias/create');
+		$this->load->view('templates/footer');
+	}
+
+
+	public function store()
+	{
+
+		$this->form_validation->set_rules(
+			'titulo',
+			'"Categoria"',
+			'required|max_length[128]|is_unique[categorias.titulo]',
+			array('is_unique' => $this->input->post('titulo') . ' já existe.')
+		);
 
 		if ($this->form_validation->run() === FALSE) {
-			$this->load->view('templates/header', $data);
-			$this->load->view('categorias/create');
-			$this->load->view('templates/footer');
+			$this->session->set_flashdata('errors', validation_errors());
+			redirect(site_url('categorias/create'));
 		} else {
-			$data['success'] = TRUE;
-			$this->categorias_model->insert_categoria();
-			$data['categorias'] = $this->categorias_model->get_categorias();
-
-			$this->load->view('templates/header', $data);
-			$this->load->view('categorias/index', $data);
-			$this->load->view('templates/footer');
+			$this->categorias_model->insert();
+			$this->session->set_flashdata('success', 'Categoria cadastrada!');
+			redirect('categorias/');
 		}
+	}
+
+	public function edit($id)
+	{
+		$data['title'] = 'Atualizar categorias';
+		$data['categoria'] = $this->categorias_model->find($id);
+
+		$this->load->view('templates/header', $data);
+		$this->load->view('categorias/update', $data);
+		$this->load->view('templates/footer');
+	}
+
+	public function update($id)
+	{
+		$categoria = $this->categorias_model->find($id);
+
+		if ($this->input->post('titulo') != $categoria->titulo) {
+			$this->form_validation->set_rules(
+				'titulo',
+				'"Categoria"',
+				'required|max_length[128]|is_unique[categorias.titulo]',
+				array('is_unique' => $this->input->post('titulo') . ' já existe.')
+			);
+		} else {
+			$this->form_validation->set_rules(
+				'titulo',
+				'"Categoria"',
+				'required|max_length[128]'
+			);
+		}
+
+
+		if ($this->form_validation->run() === FALSE) {
+			$this->session->set_flashdata('errors', validation_errors());
+			redirect(site_url('categorias/edit/') . $id);
+		} else {
+			$this->categorias_model->update($id);
+			$this->session->set_flashdata('success', 'Categoria cadastrada!');
+			redirect('categorias/');
+		}
+	}
+
+	public function delete($id)
+	{
+		$this->categorias_model->delete($id);
+		$this->session->set_flashdata('success', 'Categoria deletada!');
+		redirect('categorias/');
 	}
 }
