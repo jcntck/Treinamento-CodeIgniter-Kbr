@@ -1,10 +1,98 @@
-body {
-    margin: 25px;
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/template-overviews/simple-sidebar)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
+ */
+ body {
+    overflow-x: hidden;
+    background-color:#fff;
+  }
+  
+  #sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: -15rem;
+    -webkit-transition: margin .25s ease-out;
+    -moz-transition: margin .25s ease-out;
+    -o-transition: margin .25s ease-out;
+    transition: margin .25s ease-out;
+  }
+  
+  #sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+  }
+  
+  #sidebar-wrapper .list-group {
+    width: 15rem;
+  }
+  
+  #page-content-wrapper {
+    min-width: 100vw;
+  }
+  
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+  }
+  
+  @media (min-width: 768px) {
+    #sidebar-wrapper {
+      margin-left: 0;
+    }
+  
+    #page-content-wrapper {
+      min-width: 0;
+      width: 100%;
+    }
+  
+    #wrapper.toggled #sidebar-wrapper {
+      margin-left: -15rem;
+    }
+  }
+  /* END-SIDEBAR */
+
+.table td, .table th {
+    border-top: 1px solid #1a2930;
+    vertical-align:  middle;
+    text-align: center;
 }
 
-.construcao {
-    position: relative;
-    color: #555;
-    text-align: center;
-    top: calc(50% - 24px);
+.title {
+    font-weight: 300;
 }
+
+.border-bottom-custom {
+    border-bottom: 1px solid #1a2930;
+}
+.border-right-custom {
+    border-right: 1px solid #1a2930;
+}
+
+.bg-default {
+    background-color: #d9d9d9;
+}
+
+.item-custom {
+    background-color: #d9d9d9;
+    border-top: 1px solid #1a2930;
+    border-bottom: 1px solid #1a2930;
+}
+
+.item-custom:hover, .item-custom:focus {
+    background-color: #4484ce;
+    color: white;
+}
+
+.btn-default:hover {
+    border-bottom: 3px solid #4484ce;
+}
+
+.btn-form {
+  background-color: #f19f4d;
+  color:white;
+}
+
+.btn-form:hover {
+  background-color: rgba(241, 159, 77, 0.9);
+  color: #fff;
+}
+

@@ -22,99 +22,106 @@ class Subcategorias extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('categorias_model');
-		$this->load->helper('url_helper');
-		$this->load->helper('html');
-		$this->load->helper('form');
-		$this->load->library('session');
-		$this->load->library('form_validation');
+		$this->load->model(array('subcategorias_model', 'categorias_model'));
+		$this->load->helper(array('url_helper', 'html', 'form'));
+		$this->load->library(array('session', 'form_validation'));
 	}
 
 	public function index()
 	{
-		$data['title'] = 'Categorias';
+		$data['title'] = 'Subcategorias';
 		$data['categorias'] = $this->categorias_model->get();
+		$data['subcategorias'] = $this->subcategorias_model->get();
 
-		$this->load->view('templates/header', $data);
-		$this->load->view('categorias/index', $data);
-		$this->load->view('templates/footer');
+		$this->load->view('subcategorias/index', $data);
 	}
 
-	public function create()
+	public function create($data = null)
 	{
-        $data['title'] = 'Cadastro subcategorias';
-        $data['categorias'] = $this->categorias_model->get();
+		$data['title'] = 'Cadastro subcategorias';
+		$data['categorias'] = $this->categorias_model->get();
+		if (empty($data['errors'])) {
+			$data['errors'] = null;
+		}
 
-		$this->load->view('templates/header', $data);
 		$this->load->view('subcategorias/create', $data);
-		$this->load->view('templates/footer');
 	}
 
 
 	public function store()
 	{
-
+		$this->form_validation->set_rules('categoria_id', '"Categoria"', 'required');
 		$this->form_validation->set_rules(
 			'titulo',
-			'"Categoria"',
-			'required|max_length[128]|is_unique[categorias.titulo]',
+			'"Subcategoria"',
+			'trim|required|max_length[128]|is_unique[subcategorias.titulo]',
 			array('is_unique' => $this->input->post('titulo') . ' já existe.')
 		);
 
 		if ($this->form_validation->run() === FALSE) {
-			$this->session->set_flashdata('errors', validation_errors());
-			redirect(site_url('categorias/create'));
+			$data['errors'] = validation_errors();
+
+			$this->create($data);
 		} else {
-			$this->categorias_model->insert();
-			$this->session->set_flashdata('success', 'Categoria cadastrada!');
-			redirect('categorias/');
+			if ($this->subcategorias_model->insert()) {
+				$this->session->set_flashdata('success', 'Subcategoria cadastrada!');
+			} else {
+				$this->session->set_flashdata('errors', 'Não foi possível cadastrar a Subcategoria. Tente novamente mais tarde!');
+			}
+			redirect('subcategorias/');
 		}
 	}
 
-	public function edit($id)
+	public function edit($id, $data = null)
 	{
-		$data['title'] = 'Atualizar categorias';
-		$data['categoria'] = $this->categorias_model->find($id);
+		$data['title'] = 'Atualizar subcategorias';
+		$data['categorias'] = $this->categorias_model->get();
+		$data['subcategoria'] = $this->subcategorias_model->find($id);
+		if (empty($data['errors'])) {
+			$data['errors'] = null;
+		}
 
-		$this->load->view('templates/header', $data);
-		$this->load->view('categorias/update', $data);
-		$this->load->view('templates/footer');
+		$this->load->view('subcategorias/update', $data);
 	}
 
 	public function update($id)
 	{
-		$categoria = $this->categorias_model->find($id);
+		$subcategoria = $this->subcategorias_model->find($id);
 
-		if ($this->input->post('titulo') != $categoria->titulo) {
+		$this->form_validation->set_rules('categoria_id', '"Categoria"', 'required');
+		if ($this->input->post('titulo') != $subcategoria->titulo) {
 			$this->form_validation->set_rules(
 				'titulo',
-				'"Categoria"',
-				'required|max_length[128]|is_unique[categorias.titulo]',
+				'"Subcategoria"',
+				'trim|required|max_length[50]|is_unique[subcategorias.titulo]',
 				array('is_unique' => $this->input->post('titulo') . ' já existe.')
 			);
 		} else {
 			$this->form_validation->set_rules(
 				'titulo',
-				'"Categoria"',
-				'required|max_length[128]'
+				'"Subcategoria"',
+				'trim|required|max_length[50]'
 			);
 		}
 
 
 		if ($this->form_validation->run() === FALSE) {
-			$this->session->set_flashdata('errors', validation_errors());
-			redirect(site_url('categorias/edit/') . $id);
+			$data['errors'] = validation_errors();
+			$this->edit($id, $data);
 		} else {
-			$this->categorias_model->update($id);
-			$this->session->set_flashdata('success', 'Categoria cadastrada!');
-			redirect('categorias/');
+			if ($this->subcategorias_model->update($id)) {
+				$this->session->set_flashdata('success', 'Subcategoria atualizada!');
+			} else {
+				$this->session->set_flashdata('error', 'Não foi possível atualizar esta subcategoria. Tente novamente mais tarde.');
+			}
+			redirect('subcategorias/');
 		}
 	}
 
 	public function delete($id)
 	{
-		$this->categorias_model->delete($id);
-		$this->session->set_flashdata('success', 'Categoria deletada!');
-		redirect('categorias/');
+		$this->subcategorias_model->delete($id);
+		$this->session->set_flashdata('success', 'Subcategoria deletada!');
+		redirect('subcategorias/');
 	}
 }

@@ -1,4 +1,5 @@
 <?php
+
 class Subcategorias_model extends CI_Model
 {
 
@@ -10,7 +11,7 @@ class Subcategorias_model extends CI_Model
 
     public function get()
     {
-        $this->db->select('*');
+        $this->db->select('subcategorias.id, subcategorias.titulo, categorias.titulo as categoria');
         $this->db->from('subcategorias');
         $this->db->join('categorias', 'categorias.id = subcategorias.categoria_id');
         $this->db->order_by('id', 'DESC');
@@ -28,15 +29,17 @@ class Subcategorias_model extends CI_Model
     public function insert()
     {
         $this->titulo = $this->input->post('titulo');
-        $this->db->insert('subcategorias', $this);
+        $this->categoria_id = $this->input->post('categoria_id');
+        return $this->db->insert('subcategorias', $this);
     }
 
-    // public function update($id)
-    // {
-    //     $this->titulo = $this->input->post('titulo');
-    //     $this->db->where('id', $id);
-    //     $this->db->update('categorias', $this);
-    // }
+    public function update($id)
+    {
+        $this->titulo = $this->input->post('titulo');
+        $this->categoria_id = $this->input->post('categoria_id');
+        $this->db->where('id', $id);
+        return $this->db->update('subcategorias', $this);
+    }
 
     public function delete($id) 
     {

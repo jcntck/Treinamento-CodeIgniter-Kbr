@@ -23,11 +23,8 @@ class Categorias extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('categorias_model');
-		$this->load->helper('url_helper');
-		$this->load->helper('html');
-		$this->load->helper('form');
-		$this->load->library('session');
-		$this->load->library('form_validation');
+		$this->load->helper(array('url_helper', 'html', 'form'));
+		$this->load->library(array('session', 'form_validation'));
 	}
 
 	public function index()
@@ -35,34 +32,32 @@ class Categorias extends CI_Controller
 		$data['title'] = 'Categorias';
 		$data['categorias'] = $this->categorias_model->get();
 
-		$this->load->view('templates/header', $data);
 		$this->load->view('categorias/index', $data);
-		$this->load->view('templates/footer');
 	}
 
-	public function create()
+	public function create($data = null)
 	{
 		$data['title'] = 'Cadastro categorias';
+		if(empty($data['errors'])) {
+			$data['errors'] = null;
+		}
 
-		$this->load->view('templates/header', $data);
-		$this->load->view('categorias/create');
-		$this->load->view('templates/footer');
+		$this->load->view('categorias/create', $data);
 	}
 
 
 	public function store()
 	{
-
 		$this->form_validation->set_rules(
 			'titulo',
 			'"Categoria"',
-			'required|max_length[128]|is_unique[categorias.titulo]',
+			'trim|required|max_length[128]|is_unique[categorias.titulo]',
 			array('is_unique' => $this->input->post('titulo') . ' já existe.')
 		);
 
 		if ($this->form_validation->run() === FALSE) {
-			$this->session->set_flashdata('errors', validation_errors());
-			redirect(site_url('categorias/create'));
+			$data['errors'] = validation_errors();
+			$this->create($data);
 		} else {
 			$this->categorias_model->insert();
 			$this->session->set_flashdata('success', 'Categoria cadastrada!');
@@ -70,14 +65,15 @@ class Categorias extends CI_Controller
 		}
 	}
 
-	public function edit($id)
+	public function edit($id, $data = null)
 	{
 		$data['title'] = 'Atualizar categorias';
 		$data['categoria'] = $this->categorias_model->find($id);
+		if(empty($data['errors'])) {
+			$data['errors'] = null;
+		}
 
-		$this->load->view('templates/header', $data);
 		$this->load->view('categorias/update', $data);
-		$this->load->view('templates/footer');
 	}
 
 	public function update($id)
@@ -88,24 +84,23 @@ class Categorias extends CI_Controller
 			$this->form_validation->set_rules(
 				'titulo',
 				'"Categoria"',
-				'required|max_length[128]|is_unique[categorias.titulo]',
+				'trim|required|max_length[128]|is_unique[categorias.titulo]',
 				array('is_unique' => $this->input->post('titulo') . ' já existe.')
 			);
 		} else {
 			$this->form_validation->set_rules(
 				'titulo',
 				'"Categoria"',
-				'required|max_length[128]'
+				'trim|required|max_length[128]'
 			);
 		}
 
-
 		if ($this->form_validation->run() === FALSE) {
-			$this->session->set_flashdata('errors', validation_errors());
-			redirect(site_url('categorias/edit/') . $id);
+			$data['errors'] = validation_errors();
+			$this->edit($id, $data);
 		} else {
 			$this->categorias_model->update($id);
-			$this->session->set_flashdata('success', 'Categoria cadastrada!');
+			$this->session->set_flashdata('success', 'Categoria atualizada!');
 			redirect('categorias/');
 		}
 	}
