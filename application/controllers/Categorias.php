@@ -23,7 +23,7 @@ class Categorias extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('categorias_model');
-		$this->load->helper(array('url_helper', 'html', 'form'));
+		$this->load->helper(array('form'));
 		$this->load->library(array('session', 'form_validation'));
 	}
 

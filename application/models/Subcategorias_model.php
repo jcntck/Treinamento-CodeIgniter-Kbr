@@ -26,6 +26,16 @@ class Subcategorias_model extends CI_Model
         return $query->row();
     }
 
+    public function findByCategoria($idCategoria)
+    {
+        $this->db->select('subcategorias.titulo, categorias.titulo as tituloCategoria, subcategorias.id');
+        $this->db->from('subcategorias');
+        $this->db->join('categorias', 'categorias.id = categoria_id');
+        $this->db->where('categoria_id', $idCategoria);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
     public function insert()
     {
         $this->titulo = $this->input->post('titulo');

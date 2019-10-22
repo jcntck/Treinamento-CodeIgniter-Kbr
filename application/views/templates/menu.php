@@ -4,7 +4,7 @@
         <div class="bg-default border-right-custom" id="sidebar-wrapper">
             <div class="sidebar-heading">CodeIgniter - CRUD </div>
             <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action item-custom">Usuários</a>
+                <a href="<?=base_url('usuarios/');?>" class="list-group-item list-group-item-action item-custom">Usuários</a>
                 <a href="<?=base_url('categorias/');?>" class="list-group-item list-group-item-action item-custom">Categorias</a>
                 <a href="<?=base_url('subcategorias/');?>" class="list-group-item list-group-item-action item-custom">Subcategorias</a>
             </div>
