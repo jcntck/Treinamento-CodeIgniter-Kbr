@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 
+    <!-- JCrop -->
+    <link href="<?= base_url('assets/jcrop/css/jquery.Jcrop.css') ?>" rel="stylesheet" type="text/css" />
+    <link href="<?= base_url('assets/jcrop/css/jquery.Jcrop.min.css') ?>" rel="stylesheet" type="text/css" />
+    <!-- DataTable -->
+    <link href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
     <!-- CSS Pessoal -->
     <?php echo link_tag(asset_url() . 'css/style.css'); ?>
 

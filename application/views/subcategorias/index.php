@@ -40,7 +40,7 @@
 
         <!-- Tabela -->
         <?php if (count($subcategorias) > 0) : ?>
-            <table class="table">
+            <table class="table" id="table">
                 <thead class="lead">
                     <tr>
                         <td scope="col">ID</td>

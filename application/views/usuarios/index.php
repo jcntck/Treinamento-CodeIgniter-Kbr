@@ -30,23 +30,30 @@
             </div>
         <?php endif; ?>
         <!-- Tabela -->
-        <?php if (count($categorias) > 0) : ?>
-            <table class="table">
+        <?php if (count($usuarios) > 0) : ?>
+            <table class="table" id="table">
                 <thead class="lead">
                     <tr>
-                        <td scope="col">ID</td>
-                        <td scope="col">Nome da categoria</td>
+                        <td scope="col">Id:</td>
+                        <td scope="col">Nome:</td>
+                        <td scope="col">Categoria:</td>
+                        <td scope="col">Subcategoria:</td>
+                        <td scope="col">Última alteração: </td>
                         <td scope="col">Ações</td>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($categorias as $categoria) : ?>
+                    <?php foreach ($usuarios as $usuario) : ?>
                         <tr>
-                            <td scope="row"><?php echo $categoria->id; ?></td>
-                            <td><?php echo $categoria->titulo; ?></td>
+                            <!-- <td scope="row"><div class="ft-perfil m-auto"><img src="<?= base_url($usuario->ft_perfil); ?>" class="img-thumbnail img-fluid" alt="foto-perfil"></div></td> -->
+                            <td><?=$usuario->id?></td>
+                            <td><?php echo $usuario->nome; ?></td>
+                            <td><?=$usuario->catTitulo ? $usuario->catTitulo : '-' ?></td>
+                            <td><?=$usuario->subTitulo ? $usuario->subTitulo : '-' ?></td>
+                            <td class="text-muted small"><?php echo date('d/m/Y H:i:s', strtotime($usuario->update_at)); ?></td>
                             <td>
-                                <form method="DELETE" action="<?php echo site_url('categorias/delete/' . $categoria->id); ?>">
-                                    <a href="<?php echo site_url('categorias/edit') . "/" . $categoria->id ?>" class="btn btn-outline-secondary" title="Editar"><i class="fas fa-edit"></i></a>
+                                <form method="DELETE" action="<?php echo site_url('usuarios/delete/' . $usuario->id); ?>">
+                                    <a href="<?php echo site_url('usuarios/edit') . "/" . $usuario->id ?>" class="btn btn-outline-secondary" title="Editar"><i class="fas fa-edit"></i></a>
                                     <button type="submit" class="btn btn-outline-danger" title="Deletar"><i class="far fa-trash-alt"></i></button>
                                 </form>
                             </td>

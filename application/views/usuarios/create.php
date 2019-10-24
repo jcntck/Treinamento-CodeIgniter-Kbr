@@ -11,7 +11,7 @@ $this->load->view('templates/menu'); ?>
 </nav>
 <div class="container-fluid">
     <div class='col-lg-6 m-auto'>
-        <h2 class="my-5 title">Cadastro de usuários:</h2>
+        <h2 class="my-5 title">Cadastre-se:</h2>
         <?php
         if ($errors) {
             echo '<div class="alert alert-danger">';
@@ -20,7 +20,7 @@ $this->load->view('templates/menu'); ?>
         }
         ?>
 
-        <?php echo form_open_multipart('usuarios/create'); ?>
+        <?php echo form_open_multipart('usuarios/store'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="nome">Nome: </label>
@@ -31,7 +31,7 @@ $this->load->view('templates/menu'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="email">E-mail: </label>
-                <input type="email" name="email" id="email" maxlength="129" class="form-control <?php if (!empty(form_error('email'))) : ?> is-invalid <?php endif; ?>" placeholder="Digite seu e-mail" aria-describedby="emailHelp" value="<?php echo set_value('nome'); ?>">
+                <input type="email" name="email" id="email" maxlength="129" class="form-control <?php if (!empty(form_error('email'))) : ?> is-invalid <?php endif; ?>" placeholder="Digite seu e-mail" aria-describedby="emailHelp" value="<?php echo set_value('email'); ?>">
                 <small id="emailHelp" class="form-text text-muted">Ex.: seuemail@seuprovedor.com</small>
             </div>
         </div>
@@ -39,14 +39,27 @@ $this->load->view('templates/menu'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="nascimento">Data de Nascimento: </label>
-                <input type="text" name="nascimento" id="nascimento" maxlength="10" class="form-control <?php if (!empty(form_error('nascimento'))) : ?> is-invalid <?php endif; ?>" placeholder="Digite sua data de nascimento" value="<?php echo set_value('nome'); ?>">
+                <input type="text" name="nascimento" id="nascimento" maxlength="10" class="form-control <?php if (!empty(form_error('nascimento'))) : ?> is-invalid <?php endif; ?>" placeholder="Digite sua data de nascimento" value="<?php echo set_value('nascimento'); ?>">
             </div>
         </div>
 
         <div class="row my-md-2">
             <div class="col">
                 <label for="foto">Selecione uma foto: </label>
-                <input type="file" name="foto" id="foto" class="form-control-file <?php if (!empty(form_error('foto'))) : ?> is-invalid <?php endif; ?>">
+                <input type="file" name="foto" id="seleciona-imagem" class="form-control-file <?php if (!empty(form_error('foto'))) : ?> is-invalid <?php endif; ?>">
+                <!-- <div class="my-3">
+                    <img id="preview" class="col-5">
+                </div> -->
+            </div>
+        </div>
+
+        <div class="row my-md-2">
+            <div class="col">
+                <label for="foto">Preview da Imagem:</label>
+                <div class="col-sm-10" id="imagem-box">
+                    
+                    <h6>Escolha a imagem para recortar</h6>
+                </div>
             </div>
         </div>
 
@@ -74,7 +87,7 @@ $this->load->view('templates/menu'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="descricao">Comente sobre você: </label>
-                <textarea class="form-control" name="descricao" id="descricao" rows="3"></textarea>
+                <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= set_value('descricao') ?></textarea>
             </div>
         </div>
 
@@ -82,6 +95,17 @@ $this->load->view('templates/menu'); ?>
             <button type="submit" class="btn btn-form">Cadastrar</button>
             <a href="<?php echo site_url('usuarios/'); ?>" class="btn btn-form">Voltar</a>
         </div>
+
+        <!-- JCROP -->
+        <input type="hidden" id="x" name="x" />
+        <input type="hidden" id="y" name="y" />
+        <input type="hidden" id="wcrop" name="wcrop" />
+        <input type="hidden" id="hcrop" name="hcrop" />
+        <input type="hidden" id="wvisualizacao" name="wvisualizacao" />
+        <input type="hidden" id="hvisualizacao" name="hvisualizacao" />
+        <input type="hidden" id="woriginal" name="woriginal" />
+        <input type="hidden" id="horiginal" name="horiginal" />
+
         </form>
     </div>
 </div>
