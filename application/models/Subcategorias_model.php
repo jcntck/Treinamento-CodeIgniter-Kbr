@@ -11,7 +11,7 @@ class Subcategorias_model extends CI_Model
 
     public function get()
     {
-        $this->db->select('subcategorias.id, subcategorias.titulo, categorias.titulo as categoria');
+        $this->db->select('subcategorias.id, subcategorias.titulo, subcategorias.categoria_id, categorias.titulo as categoria');
         $this->db->from('subcategorias');
         $this->db->join('categorias', 'categorias.id = subcategorias.categoria_id');
         $this->db->order_by('id', 'DESC');
@@ -28,7 +28,7 @@ class Subcategorias_model extends CI_Model
 
     public function findByCategoria($idCategoria)
     {
-        $this->db->select('subcategorias.titulo, categorias.titulo as tituloCategoria, subcategorias.id');
+        $this->db->select('subcategorias.titulo, categorias.titulo as tituloCategoria, subcategorias.id, subcategorias.categoria_id');
         $this->db->from('subcategorias');
         $this->db->join('categorias', 'categorias.id = categoria_id');
         $this->db->where('categoria_id', $idCategoria);

@@ -20,57 +20,60 @@ $(function () {
         prevText: 'Anterior'
     });
 });
-var jcrop_api;
+
 //Jquery Mask , Ajax filtro subcategorias, JCROP
 $(document).ready(function () {
+
     $('#nascimento').mask('00/00/0000');
 
     $('#categoria_user').change(function () {
         let idCategoria = $('#categoria_user').val();
 
-        let url = 'filtrarSubcategorias/' + idCategoria;
-        console.log(url)
-        $.ajax({
-            type: 'POST',
-            data: { idCategoria: idCategoria },
-            url: url,
-            success: function (msg) {
-                $("#subcategoria").html(msg)
-            }
-        });
+        let urlBase = 'http://' + window.location.hostname + '/codeigniter/usuarios/filtrarSubcategorias';
+        let local = window.location.pathname.split('/')[3]
+        if (local == 'create') {
+            $.ajax({
+                type: 'POST',
+                data: { idCategoria: idCategoria },
+                url: urlBase,
+                success: function (json) {
+                    let subcategorias = JSON.parse(json)
+                    let option = "<option value=''>-- Selecione uma subcategoria --</option>"
+                    if (subcategorias.length > 0) {
+                        $.each(subcategorias, function (i, obj) {
+                            if (idCategoria == obj.categoria_id) {
+                                if (i == 0) option += "<option value='" + obj.id + "' selected>" + obj.titulo + "</option>"
+                                else option += "<option value='" + obj.id + "'>" + obj.titulo + "</option>"
+                            }
+                        })
+                    }
+                    $("#subcategoria").html(option);
+                }
+            });
+        } else {
+            $.ajax({
+                type: 'POST',
+                data: { idCategoria: idCategoria },
+                url: urlBase,
+                success: function (json) {
+                    let subcategorias = JSON.parse(json)
+                    let option = "<option value=''>-- Selecione uma subcategoria --</option>"
+                    if (subcategorias.length > 0) {
+                        $.each(subcategorias, function (i, obj) {
+                            if (idCategoria == obj.categoria_id) {
+                                option += "<option value='" + obj.id + "'>" + obj.titulo + "</option>"
+                            }
+                        })
+                    }
+                    $("#subcategoria").html(option);
+                }
+            });
+        }
     });
 
+
     $("#seleciona-imagem").change(function () {
-        // const file = $(this)[0].files[0];
-        // const fileReader = new FileReader();
-        // var oImage = document.getElementById('preview');
 
-        // if (this.files && this.files[0]) {
-
-        //     fileReader.onload = function () {
-        //         $('#preview').attr('src', fileReader.result);
-
-        //         if (typeof jcrop_api != 'undefined') {
-        //             jcrop_api.destroy();
-        //             jcrop_api = null;
-        //             $('#preview').width(oImage.naturalWidth);
-        //             $('#preview').height(oImage.naturalHeight);
-        //         }
-
-        //         $('#preview').Jcrop({
-        //             boxWidth: 200,
-        //             boxHeight: 200,
-        //             aspectRatio: 1,
-        //             onSelect: atualizaCoordenadas,
-        //             onChange: atualizaCoordenadas
-        //         }, function () {
-        //             jcrop_api = this;
-        //         });
-        //         defineTamanhoImagem(fileReader.result, )
-        //     }
-
-        //     fileReader.readAsDataURL(file);
-        // }
         if (typeof (FileReader) != "undefined") {
             let image_holder = $("#imagem-box");
             image_holder.empty();
@@ -79,27 +82,19 @@ $(document).ready(function () {
             reader.onload = function (e) {
                 let image = $("<img />", {
                     "src": e.target.result,
-                    "class": "img-thumbnail",
-                    "style": "width: 200px;"
+                    "class": "img-thumbnail"
                 }).appendTo(image_holder);
+
                 image.Jcrop({
+                    aspectRatio: 1,
                     onChange: atualizaCoordenadas,
-                    onSelect: atualizaCoordenadas,
-                    minSize: [64, 64],
-                    boxWidth: 200,
-                    boxHeight: 200
+                    onSelect: atualizaCoordenadas
                 });
                 defineTamanhoImagem(e.target.result, image);
             }
             image_holder.show();
             reader.readAsDataURL($(this)[0].files[0]);
         }
-    });
-
-    $('#recortar-imagem').click(function () {
-        if (parseInt($('#wcrop').val())) return true;
-        alert('Selecione a área de corte para continuar.');
-        return false;
     });
 });
 
@@ -122,12 +117,12 @@ function defineTamanhoImagem(imgOriginal, imgVisualizacao) {
     }
 }
 
-// Teste datatable
-$(document).ready( function () {
-    $('#table').DataTable( {
+// Datatable
+$(document).ready(function () {
+    $('#table').DataTable({
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Portuguese-Brasil.json"
         },
-        "order": [[ 0, 'desc']]
-    } );
-} );
+        "order": [[0, 'desc']]
+    });
+});

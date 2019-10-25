@@ -35,6 +35,9 @@ class Usuarios extends CI_Controller
         $this->form_validation->set_rules('nome', '"Nome"', 'trim|required|max_length[128]');
         $this->form_validation->set_rules('email', '"Email"', 'trim|required|valid_email|max_length[128]|is_unique[usuarios.email]', array('is_unique' => 'Esse e-mail já existe.'));
         $this->form_validation->set_rules('nascimento', '"Data de Nascimento"', 'trim|required|callback_date_valid', array('date_valid' => 'Digite uma data válida.'));
+        if($this->input->post('categoria_id')) {
+            $this->form_validation->set_rules('subcategoria_id', '"Subcategoria"', 'trim|required', array('required' => 'Selecione a subcategoria referente a categoria escolhida.'));
+        }
 
         if ($this->form_validation->run() === FALSE) {
             $data['errors'] = validation_errors();
@@ -53,13 +56,65 @@ class Usuarios extends CI_Controller
         }
     }
 
-    public function delete($id)
-	{
+    public function edit($id, $data = null)
+    {
+        $data['title'] = 'Atualizar usuários';
+        $data['usuario'] = $this->usuarios_model->find($id);
+        $data['categorias'] = $this->categorias_model->get();
+        $data['subcategorias'] = $this->subcategorias_model->get();
+
+        if (empty($data['errors'])) {
+            $data['errors'] = null;
+        }
+
+        $this->load->view('usuarios/update', $data);
+    }
+
+    public function update($id)
+    {
         $usuario = $this->usuarios_model->find($id);
-		$this->usuarios_model->delete($usuario);
-		$this->session->set_flashdata('success', 'Usuário deletado!');
-		redirect('usuarios/');
-	}
+
+        if ($this->input->post('email') != $usuario->email) {
+            $this->form_validation->set_rules('email', '"Email"', 'trim|required|valid_email|max_length[128]|is_unique[usuarios.email]', array('is_unique' => 'Esse e-mail já existe.'));
+        } else {
+            $this->form_validation->set_rules('email', '"Email"', 'trim|required|valid_email|max_length[128]');
+        }
+        $this->form_validation->set_rules('nome', '"Nome"', 'trim|required|max_length[128]');
+        $this->form_validation->set_rules('nascimento', '"Data de Nascimento"', 'trim|required|callback_date_valid', array('date_valid' => 'Digite uma data válida.'));
+        if($this->input->post('categoria_id')) {
+            $this->form_validation->set_rules('subcategoria_id', '"Subcategoria"', 'trim|required', array('required' => 'Selecione a subcategoria referente a categoria escolhida.'));
+        }
+
+        if ($this->form_validation->run() === FALSE) {
+            $data['errors'] = validation_errors();
+            $this->edit($id, $data);
+        } else {
+            $posts = $this->input->post();
+            $img = $this->uploadImage();
+            if ($img != null) {
+                unlink(base_url('assets/images/crops/' . $usuario->ft_perfil));
+            } else {
+                $img = $usuario->ft_perfil;
+            }
+            $post = [
+                'nome' => $posts['nome'],
+                'email' => $posts['email'],
+                'nascimento' => $posts['nascimento'],
+                'foto' => $img
+            ];
+            $this->usuarios_model->update($id, $post);
+            $this->session->set_flashdata('success', 'Usuário atualizada!');
+            redirect('usuarios/');
+        }
+    }
+
+    public function delete($id)
+    {
+        $usuario = $this->usuarios_model->find($id);
+        $this->usuarios_model->delete($usuario);
+        $this->session->set_flashdata('success', 'Usuário deletado!');
+        redirect('usuarios/');
+    }
 
     public function filtrarSubcategorias()
     {
@@ -67,12 +122,9 @@ class Usuarios extends CI_Controller
 
         $subcategorias = $this->subcategorias_model->findByCategoria($idCategoria);
 
-        $option = "<option value=''>-- Selecione uma subcategoria --</option>";
-        foreach ($subcategorias as $subcategoria) {
-            $option .= "<option value='" . $subcategoria->id . "'>" . $subcategoria->titulo . "</option>";
-        }
-        echo $option;
+        echo json_encode($subcategorias);
     }
+
 
     function date_valid($date)
     {
@@ -102,7 +154,7 @@ class Usuarios extends CI_Controller
             $configCrop['source_image'] = $dadosImagem['full_path'];
             $configCrop['new_image'] = './assets/images/crop/';
             $configCrop['maintain_ratio'] = FALSE;
-            $configCrop['quality']= 100;
+            $configCrop['quality'] = 100;
             $configCrop['width']  = $tamanhos['wcrop'];
             $configCrop['height'] = $tamanhos['hcrop'];
             $configCrop['x_axis'] = $tamanhos['x'];
@@ -115,9 +167,9 @@ class Usuarios extends CI_Controller
                 $data['errors'] = $this->image_lib->display_errors();
                 return var_dump($data);
             } else {
-                $urlImagem = 'assets/images/crop/' . $dadosImagem['file_name'];
+                $nomeImagem = $dadosImagem['file_name'];
                 unlink($dadosImagem['full_path']);
-                return $urlImagem;
+                return $nomeImagem;
             }
         }
     }
