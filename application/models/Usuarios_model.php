@@ -10,7 +10,7 @@ class Usuarios_model extends CI_Model
 
     public function get()
     {
-        $this->db->select('usuarios.id, usuarios.nome, usuarios.email, usuarios.dt_nascimento, usuarios.ft_perfil, usuarios.subcategoria_id, usuarios.update_at, subcategorias.titulo as subTitulo, subcategorias.categoria_id, categorias.titulo as catTitulo, categorias.id as catId');
+        $this->db->select('usuarios.id, usuarios.nome, usuarios.email, usuarios.dt_nascimento, usuarios.ft_perfil, usuarios.descricao, usuarios.subcategoria_id, usuarios.created_at, usuarios.updated_at, subcategorias.titulo as subTitulo, subcategorias.categoria_id, categorias.titulo as catTitulo, categorias.id as catId');
         $this->db->from('usuarios');
         $this->db->join('subcategorias', 'usuarios.subcategoria_id = subcategorias.id', 'left');
         $this->db->join('categorias', 'subcategorias.categoria_id = categorias.id', 'left');
@@ -21,7 +21,7 @@ class Usuarios_model extends CI_Model
 
     public function find($id)
     {
-        $this->db->select('usuarios.id, usuarios.nome, usuarios.email, usuarios.dt_nascimento, usuarios.ft_perfil, usuarios.subcategoria_id, usuarios.update_at, subcategorias.titulo as subTitulo, subcategorias.categoria_id, categorias.titulo as catTitulo, categorias.id as catId');
+        $this->db->select('usuarios.id, usuarios.nome, usuarios.email, usuarios.dt_nascimento, usuarios.ft_perfil, usuarios.descricao, usuarios.subcategoria_id, usuarios.created_at, usuarios.updated_at, subcategorias.titulo as subTitulo, subcategorias.categoria_id, categorias.titulo as catTitulo, categorias.id as catId');
         $this->db->from('usuarios');
         $this->db->join('subcategorias', 'usuarios.subcategoria_id = subcategorias.id', 'left');
         $this->db->join('categorias', 'subcategorias.categoria_id = categorias.id', 'left');
@@ -37,9 +37,11 @@ class Usuarios_model extends CI_Model
         $this->email = $post['email'];
         $this->dt_nascimento = self::date_converter($post['nascimento']);
         $this->ft_perfil = $post['foto'];
+        $this->descricao = $post['descricao'];
         $this->subcategoria_id = $this->input->post('subcategoria_id') ? $this->input->post('subcategoria_id') : null;
 
-        return $this->db->insert('usuarios', $this);
+        $this->db->insert('usuarios', $this);
+        return $this->db->insert_id();
     }
 
     public function update($id, $post)
@@ -48,14 +50,16 @@ class Usuarios_model extends CI_Model
         $this->email = $post['email'];
         $this->dt_nascimento = self::date_converter($post['nascimento']);
         $this->ft_perfil = $post['foto'];
+        $this->descricao = $post['descricao'];
         $this->subcategoria_id = $this->input->post('subcategoria_id') ? $this->input->post('subcategoria_id') : null;
         $this->db->where('id', $id);
+
         return $this->db->update('usuarios', $this);
     }
 
     public function delete($usuario) 
     {
-        unlink($usuario->ft_perfil);
+        unlink('./assets/images/crop/' . $usuario->ft_perfil);
         $this->db->delete('usuarios', array('id' => $usuario->id));
     }
 

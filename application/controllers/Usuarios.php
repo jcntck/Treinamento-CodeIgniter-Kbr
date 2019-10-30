@@ -35,7 +35,8 @@ class Usuarios extends CI_Controller
         $this->form_validation->set_rules('nome', '"Nome"', 'trim|required|max_length[128]');
         $this->form_validation->set_rules('email', '"Email"', 'trim|required|valid_email|max_length[128]|is_unique[usuarios.email]', array('is_unique' => 'Esse e-mail já existe.'));
         $this->form_validation->set_rules('nascimento', '"Data de Nascimento"', 'trim|required|callback_date_valid', array('date_valid' => 'Digite uma data válida.'));
-        if($this->input->post('categoria_id')) {
+        $this->form_validation->set_rules('foto', '"Foto"', 'callback_validate_image');
+        if ($this->input->post('categoria_id')) {
             $this->form_validation->set_rules('subcategoria_id', '"Subcategoria"', 'trim|required', array('required' => 'Selecione a subcategoria referente a categoria escolhida.'));
         }
 
@@ -48,10 +49,16 @@ class Usuarios extends CI_Controller
                 'nome' => $posts['nome'],
                 'email' => $posts['email'],
                 'nascimento' => $posts['nascimento'],
-                'foto' => $this->uploadImage()
+                'foto' => $this->uploadImage(),
+                'descricao' => $posts['descricao']
             ];
-            $this->usuarios_model->insert($post);
-            $this->session->set_flashdata('success', 'Usuário cadastrado!');
+            $id = $this->usuarios_model->insert($post);
+            $data['usuario'] = $this->usuarios_model->find($id);
+            $data['update'] = 0;
+            $data['title'] = 'CONFIRMAÇÃO DE CADASTRO';
+            if ($this->SendEmailToUser($posts['email'], $posts['nome'], $data['title'], $data)) {
+                $this->session->set_flashdata('success', "Usuário cadastrado");
+            }
             redirect('usuarios/');
         }
     }
@@ -81,7 +88,8 @@ class Usuarios extends CI_Controller
         }
         $this->form_validation->set_rules('nome', '"Nome"', 'trim|required|max_length[128]');
         $this->form_validation->set_rules('nascimento', '"Data de Nascimento"', 'trim|required|callback_date_valid', array('date_valid' => 'Digite uma data válida.'));
-        if($this->input->post('categoria_id')) {
+        $this->form_validation->set_rules('foto', '"Foto"', 'callback_validate_image');
+        if ($this->input->post('categoria_id')) {
             $this->form_validation->set_rules('subcategoria_id', '"Subcategoria"', 'trim|required', array('required' => 'Selecione a subcategoria referente a categoria escolhida.'));
         }
 
@@ -90,9 +98,10 @@ class Usuarios extends CI_Controller
             $this->edit($id, $data);
         } else {
             $posts = $this->input->post();
+
             $img = $this->uploadImage();
             if ($img != null) {
-                unlink(base_url('assets/images/crops/' . $usuario->ft_perfil));
+                unlink('./assets/images/crop/' . $usuario->ft_perfil);
             } else {
                 $img = $usuario->ft_perfil;
             }
@@ -100,12 +109,27 @@ class Usuarios extends CI_Controller
                 'nome' => $posts['nome'],
                 'email' => $posts['email'],
                 'nascimento' => $posts['nascimento'],
-                'foto' => $img
+                'foto' => $img,
+                'descricao' => $posts['descricao']
             ];
             $this->usuarios_model->update($id, $post);
-            $this->session->set_flashdata('success', 'Usuário atualizada!');
+            $data['usuario'] = $this->usuarios_model->find($id);
+            $data['update'] = 1;
+            $data['title'] = 'ATUALIZAÇÃO DE USUÁRIO';
+            if ($this->SendEmailToUser($posts['email'], $posts['nome'], $data['title'], $data)) {
+                $this->session->set_flashdata('success', 'Usuário atualizado!');
+            }
             redirect('usuarios/');
         }
+    }
+
+    public function view($id)
+    {
+        $usuario = $this->usuarios_model->find($id);
+        $data['title'] = 'Vizualizar usuário - ' . $usuario->nome;
+        $data['usuario'] = $usuario;
+
+        $this->load->view('usuarios/view', $data);
     }
 
     public function delete($id)
@@ -132,6 +156,32 @@ class Usuarios extends CI_Controller
         $month = (int) substr($date, 3, 2);
         $year = (int) substr($date, 6, 4);
         return checkdate($month, $day, $year);
+    }
+
+    function validate_image()
+    {
+        $check = TRUE;
+
+        if (isset($_FILES['foto']) && $_FILES['foto']['size'] != 0) {
+            $allowedExts = array("gif", "jpeg", "jpg", "png", "JPG", "JPEG", "GIF", "PNG");
+            $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
+            $extension = pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION);
+            $detectedType = exif_imagetype($_FILES['foto']['tmp_name']);
+            $type = $_FILES['foto']['type'];
+            if (!in_array($detectedType, $allowedTypes)) {
+                $this->form_validation->set_message('validate_image', 'Conteúdo de imagem inválido!');
+                $check = FALSE;
+            }
+            if (filesize($_FILES['foto']['tmp_name']) > 2000000) {
+                $this->form_validation->set_message('validate_image', 'O arquivo de imagem não pode exceder 20MB!');
+                $check = FALSE;
+            }
+            if (!in_array($extension, $allowedExts)) {
+                $this->form_validation->set_message('validate_image', "A extenção {$extension} é inválida!");
+                $check = FALSE;
+            }
+        }
+        return $check;
     }
 
     private function uploadImage()
@@ -187,5 +237,44 @@ class Usuarios extends CI_Controller
         }
 
         return $dimensoes;
+    }
+
+    private function SendEmailToUser($to, $toName, $subject, $data)
+    {
+        $this->load->library('email');
+
+        $config['charset'] = 'utf-8';
+        $config['wordwrap'] = TRUE;
+        $config['mailtype'] = 'html';
+        $config['protocol'] = 'smtp';
+        $config['smtp_port'] = 587;
+        $config['smtp_host'] = 'smtp.ambiente-dev5.provisorio.ws';
+        $config['smtp_user'] = 'webmaster@ambiente-dev5.provisorio.ws';
+        $config['smtp_pass'] = 'Producao5435!2';
+        $config['crlf'] = "\r\n";
+        $config['newline'] = "\r\n";
+
+        $this->email->initialize($config);
+
+        $this->email->from('webmaster@ambiente-dev5.provisorio.ws', 'CodeIgniter - CrUd');
+        $this->email->to($to, $toName);
+
+        $message = $this->load->view('templates/email', $data, TRUE);
+        $this->email->subject($subject);
+        $this->email->message($message);
+
+        if ($this->email->send())
+            return true;
+        else
+            return false;
+    }
+
+    public function ViewEmail()
+    {
+        $data['title'] = 'Edit';
+        $data['usuario'] = $this->usuarios_model->find(3);
+        $data['update'] = 1;
+
+        $this->load->view('templates/email', $data);
     }
 }

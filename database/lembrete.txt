@@ -1,0 +1,12 @@
+'usuarios.id,
+usuarios.nome,
+usuarios.email,
+usuarios.dt_nascimento, 
+usuarios.ft_perfil, 
+usuarios.subcategoria_id, 
+usuarios.update_at, 
+
+subcategorias.titulo as subTitulo, 
+subcategorias.categoria_id, 
+categorias.titulo as catTitulo, 
+categorias.id as catId'

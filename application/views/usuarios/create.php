@@ -46,7 +46,7 @@ $this->load->view('templates/menu'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="foto">Selecione uma foto: </label>
-                <input type="file" name="foto" id="seleciona-imagem" class="form-control-file <?php if (!empty(form_error('foto'))) : ?> is-invalid <?php endif; ?>">
+                <input type="file" name="foto" id="seleciona-imagem" class="form-control-file <?php if (!empty(form_error('foto'))) : ?> is-invalid <?php endif; ?>" accept="image/*">
                 <!-- <div class="my-3">
                     <img id="preview" class="col-5">
                 </div> -->
@@ -57,7 +57,7 @@ $this->load->view('templates/menu'); ?>
             <div class="col">
                 <label for="foto">Preview da Imagem:</label>
                 <div class="col-sm-10" id="imagem-box">
-                    
+
                     <h6>Escolha a imagem para recortar</h6>
                 </div>
             </div>
@@ -87,7 +87,9 @@ $this->load->view('templates/menu'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="descricao">Comente sobre você: </label>
-                <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= set_value('descricao') ?></textarea>
+                <textarea type="text" name="descricao" class="form-control" style="height: 200px" id="editor" placeholder="Descreva um pouco de você">
+                    <?php echo set_value('descricao'); ?>
+                </textarea>
             </div>
         </div>
 
@@ -113,3 +115,12 @@ $this->load->view('templates/menu'); ?>
 
 
 <?php $this->load->view('templates/footer'); ?>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: '/codeigniter/assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json'
+            }
+        })
+</script>

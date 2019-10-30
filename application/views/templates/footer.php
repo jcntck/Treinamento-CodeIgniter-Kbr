@@ -21,6 +21,10 @@
         <script src="<?= base_url('assets/jcrop/js/jquery.color.js') ?>"></script>
         <!-- DataTable -->
         <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <!-- CKEditor -->
+        <script src="https://cdn.ckeditor.com/ckeditor5/15.0.0/classic/ckeditor.js"></script>
+        <script src="<?=base_url('assets/ckfinder/ckfinder.js')?>"></script>
+        <script></script>
         <!-- Funções -->
         <script src="<?= asset_url() . 'js/functions.js' ?>"></script>
         </body>

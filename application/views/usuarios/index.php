@@ -50,9 +50,10 @@
                             <td><?php echo $usuario->nome; ?></td>
                             <td><?=$usuario->catTitulo ? $usuario->catTitulo : '-' ?></td>
                             <td><?=$usuario->subTitulo ? $usuario->subTitulo : '-' ?></td>
-                            <td class="text-muted small"><?php echo date('d/m/Y H:i:s', strtotime($usuario->update_at)); ?></td>
+                            <td class="text-muted small"><?php echo date('d/m/Y H:i:s', strtotime($usuario->created_at)); ?></td>
                             <td>
                                 <form method="DELETE" action="<?php echo site_url('usuarios/delete/' . $usuario->id); ?>">
+                                    <a href="<?= base_url('usuarios/view/').$usuario->id?>" class="btn btn-outline-info" title="Visualizar"><i class="fas fa-eye"></i></a>
                                     <a href="<?php echo site_url('usuarios/edit') . "/" . $usuario->id ?>" class="btn btn-outline-secondary" title="Editar"><i class="fas fa-edit"></i></a>
                                     <button type="submit" class="btn btn-outline-danger" title="Deletar"><i class="far fa-trash-alt"></i></button>
                                 </form>

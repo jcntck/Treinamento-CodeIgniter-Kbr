@@ -11,6 +11,7 @@ $(function () {
         dateFormat: 'dd/mm/yy',
         changeMonth: true,
         changeYear: true,
+        yearRange: "-100:+0",
         dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
         dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
         dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
@@ -26,11 +27,32 @@ $(document).ready(function () {
 
     $('#nascimento').mask('00/00/0000');
 
+    var urlBase = 'http://' + window.location.hostname + '/codeigniter/usuarios/filtrarSubcategorias';
+    var local = window.location.pathname.split('/')[3]
+    
+    if ($('#categoria_user').val() != "" && local == "create") {
+        let idCategoria = $('#categoria_user').val();
+        $.ajax({
+            type: 'POST',
+            data: { idCategoria: idCategoria },
+            url: urlBase,
+            success: function (json) {
+                let subcategorias = JSON.parse(json)
+                let option = "<option value=''>-- Selecione uma subcategoria --</option>"
+                if (subcategorias.length > 0) {
+                    $.each(subcategorias, function (i, obj) {
+                        if (idCategoria == obj.categoria_id) {
+                            if (i == 0) option += "<option value='" + obj.id + "' selected>" + obj.titulo + "</option>"
+                            else option += "<option value='" + obj.id + "'>" + obj.titulo + "</option>"
+                        }
+                    })
+                }
+                $("#subcategoria").html(option);
+            }
+        });
+    }
     $('#categoria_user').change(function () {
         let idCategoria = $('#categoria_user').val();
-
-        let urlBase = 'http://' + window.location.hostname + '/codeigniter/usuarios/filtrarSubcategorias';
-        let local = window.location.pathname.split('/')[3]
         if (local == 'create') {
             $.ajax({
                 type: 'POST',
@@ -61,7 +83,8 @@ $(document).ready(function () {
                     if (subcategorias.length > 0) {
                         $.each(subcategorias, function (i, obj) {
                             if (idCategoria == obj.categoria_id) {
-                                option += "<option value='" + obj.id + "'>" + obj.titulo + "</option>"
+                                if (i == 0) option += "<option value='" + obj.id + "' selected>" + obj.titulo + "</option>"
+                                else option += "<option value='" + obj.id + "'>" + obj.titulo + "</option>"
                             }
                         })
                     }
@@ -96,6 +119,7 @@ $(document).ready(function () {
             reader.readAsDataURL($(this)[0].files[0]);
         }
     });
+
 });
 
 function atualizaCoordenadas(c) {

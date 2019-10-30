@@ -57,11 +57,11 @@ $this->load->view('templates/menu'); ?>
             <div class="col">
                 <label for="foto">Preview da Imagem: <span class="small text-danger">Não faça outro upload caso queira permanecer com a mesma foto.</span></label>
                 <div class="col-sm-10" id="imagem-box">
-                <?php if(!$usuario->ft_perfil): ?>
-                <h6>Escolha a imagem para recortar</h6>
-                <?php else: ?>
-                <img src="<?= base_url('assets/images/crop/'.$usuario->ft_perfil) ?>" class="img-thumbnail">
-                <?php endif; ?>
+                    <?php if (!$usuario->ft_perfil) : ?>
+                        <h6>Escolha a imagem para recortar</h6>
+                    <?php else : ?>
+                        <img src="<?= base_url('assets/images/crop/' . $usuario->ft_perfil) ?>" class="img-thumbnail">
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -83,11 +83,11 @@ $this->load->view('templates/menu'); ?>
                 <label for="subcategoria">Subcategoria: </label>
                 <select class="form-control <?php if (!empty(form_error('categoria_id'))) : ?> is-invalid <?php endif; ?>" id="subcategoria" name="subcategoria_id">
                     <option value="">-- Selecione uma subcategoria --</option>
-                    <?php foreach ($subcategorias as $subcategoria) : 
-                        if($subcategoria->categoria_id == $usuario->catId) :
-                        ?>
-                            <option value="<?= $subcategoria->id ?>" <?php if ($subcategoria->id == $usuario->subcategoria_id) : ?> selected <?php endif; ?>><?= $subcategoria->titulo ?></option>  
-                    <?php endif; 
+                    <?php foreach ($subcategorias as $subcategoria) :
+                        if ($subcategoria->categoria_id == $usuario->catId) :
+                            ?>
+                            <option value="<?= $subcategoria->id ?>" <?php if ($subcategoria->id == $usuario->subcategoria_id) : ?> selected <?php endif; ?>><?= $subcategoria->titulo ?></option>
+                    <?php endif;
                     endforeach; ?>
                 </select>
             </div>
@@ -96,7 +96,9 @@ $this->load->view('templates/menu'); ?>
         <div class="row my-md-2">
             <div class="col">
                 <label for="descricao">Comente sobre você: </label>
-                <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= set_value('descricao') ?></textarea>
+                <textarea type="text" name="descricao" class="form-control" style="height: 200px" id="editor" placeholder="Descreva um pouco de você">
+                    <?= $usuario->descricao ?>
+                </textarea>
             </div>
         </div>
 
@@ -115,7 +117,7 @@ $this->load->view('templates/menu'); ?>
         <input type="hidden" id="woriginal" name="woriginal" />
         <input type="hidden" id="horiginal" name="horiginal" />
         <!-- Subcategoria -->
-        <input type="hidden" id="idSubcategoria" value='<?=$usuario->subcategoria_id?>'>
+        <input type="hidden" id="idSubcategoria" value='<?= $usuario->subcategoria_id ?>'>
 
         </form>
     </div>
@@ -124,3 +126,12 @@ $this->load->view('templates/menu'); ?>
 
 
 <?php $this->load->view('templates/footer'); ?>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                uploadUrl: '/codeigniter/assets/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json'
+            }
+        })
+</script>
